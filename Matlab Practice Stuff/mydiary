@@ -1,0 +1,112 @@
+
+a =
+
+     3
+
+
+b =
+
+     5
+
+
+ans =
+
+    15
+
+
+a =
+
+     3
+
+
+b =
+
+     5
+
+
+ans =
+
+    15
+
+
+a =
+
+     3
+
+
+b =
+
+     5
+
+
+ans =
+
+    15
+
+
+a =
+
+     3
+
+
+b =
+
+     5
+
+
+ans =
+
+    15
+
+a = 3
+
+a =
+
+     3
+
+b = 5
+
+b =
+
+     5
+
+a * b
+
+ans =
+
+    15
+
+
+diary off 
+mydiary
+{Unrecognized function or variable 'mydiary'.
+} 
+diary(mydiary)
+{Unrecognized function or variable 'mydiary'.
+} 
+diary(diary)
+{Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('diary')" style="font-weight:bold">diary</a>
+Too many output arguments.
+} 
+diary mydiary
+
+a = 3
+
+a =
+
+     3
+
+b = 5
+
+b =
+
+     5
+
+a * b
+
+ans =
+
+    15
+
+
+diary off 

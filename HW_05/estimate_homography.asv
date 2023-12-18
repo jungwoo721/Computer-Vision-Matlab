@@ -1,0 +1,18 @@
+function H = estimate_homography(PA, PB)
+
+A = [];                 % init matrix A
+num_points = size(PA, 1);
+
+for i = 1:num_points     
+    [x, y] = PA(i, :);       
+    [x_prime, y_prime] = PB(i, :);     
+    
+    A_sub = [-x, -y, -1, 0, 0, 0, x * x_prime, y*x_prime x_prime;
+             0 0 0 -x -y -1 x*y_tr y*y_tr y_tr];       % set the A matrix for the specific pair
+         
+    A = [A;A_sub];         % concat, 
+end
+
+[~, ~, V] = svd(A); 
+h = V(:, end); 
+H = reshape(h, 3, 3)';

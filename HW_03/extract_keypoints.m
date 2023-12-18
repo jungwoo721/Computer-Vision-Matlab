@@ -1,0 +1,100 @@
+function [x, y, scores, Ih, Iv] = extract_keypoints(image)
+%% extract_keypoints
+% input:
+%   image: colored image. Not grayscale or double yet.
+% output:
+%   x: n x 1 vector of x (col) locations that survive non-maximum suppression. 
+%   y: n x 1 vector of y (row) locations that survive non-maximum suppression.
+%   scores: n x 1 vector of R scores of the keypoints correponding to (x,y).
+%   Ih: x- (horizontal) gradient. Also appeared as Ix in the slides.
+%   Iv: y- (vertical) gradient. Also appeared as Iy in the slides.
+
+% The kernels are provided, but you can try other kernels.
+Ih_kernel = [1 0 -1; ...
+             2 0 -2; ...
+             1 0 -1];
+Iv_kernel = Ih_kernel';
+
+%% [10 pts] Part A: Setup (Implement yourself)
+% set hyperparameters
+k = 0.05;
+window_size = 5;
+
+% convert image to grayscale, double
+grayscale_img = rgb2gray(image);
+I = double(grayscale_img);
+
+% compute horizontal, vertical image gradient
+Ih = imfilter(I, Ih_kernel);
+Iv = imfilter(I, Iv_kernel);
+
+% init matrix R
+[num_rows, num_cols] = size(I);
+R = zeros(num_rows, num_cols);
+
+% pre-compute values for M
+Ih_2 = Ih.^2;
+Iv_2 = Iv.^2;
+Ihv = Ih.*Iv;
+
+% init x, y, scores vector
+x = [];
+y = [];
+scores = [];
+%% [15 pts] Part B: R score matrix (Implement yourself)
+window_offset = ceil((window_size/2)-1);  % 2 if window_size == 5
+
+for row = 1:num_rows
+    for col = 1:num_cols
+        M = zeros(2, 2);    % init matrix M
+        if row <= window_offset || row > num_rows-window_offset || col <= window_offset || col > num_cols-window_offset
+            R(row, col) = -Inf;
+        else
+            for i = (row-window_offset):(row+window_offset)
+                for j = (col-window_offset):(col+window_offset)
+                    M(1,1) = M(1, 1) + Ih_2(i, j);
+                    M(1,2) = M(1, 2) + Ihv(i, j);
+                    M(2,1) = M(2, 1) + Ihv(i, j);
+                    M(2,2) = M(2, 2) + Iv_2(i, j);
+                end
+            end
+            R(row,col) = det(M) - k*(trace(M)^2);
+        end
+    end
+end
+
+%% Part C: Thresholding R scores (Provided to you, do not modify)
+% Threshold standards is arbitrary, but for this assignment, I set the 
+% value of the 1th percentile R as the threshold. So we only keep the
+% largest 1% of the R scores (that are not -Inf) and their locations.
+R_non_inf = R(~isinf(R));
+top_R = sort(R_non_inf(:), 'descend');
+R_threshold = top_R(round(length(top_R)*0.01));
+R(R < R_threshold) = -Inf;
+
+%% [15 pts] Part D: Non-maximum Suppression (Implement yourself)
+neighbor_idx = [-1, -1; -1, 0; -1, 1; 0, -1; 0, 1; 1, -1; 1, 0; 1, 1];
+
+for row = (window_offset+1):(num_rows-window_offset)
+    for col = (window_offset+1):(num_cols-window_offset)
+        survive = true;
+        for i = 1:8
+            neighbor_row = row + neighbor_idx(i, 1);
+            neighbor_col = col + neighbor_idx(i, 2);
+            if R(row,col) == -Inf   % suppress if R score is neg. inf.
+                survive = false;
+                break
+            end
+            if R(row, col) < R(neighbor_row, neighbor_col) % suppressed is non-max
+                R(row, col) = -Inf;
+                survive = false;
+                break
+            end
+        end
+        if survive == true
+            y = [y; row];
+            x = [x; col];
+            scores = [scores; R(row, col)];
+        end
+    end
+end

@@ -1,0 +1,40 @@
+%% A: load images
+img1 = imread('uttower1.jpeg');
+img2 = imread('uttower2.jpeg');
+
+%% B: select matching points
+% uttower1
+PA = [481, 310; 328, 510; 106, 507; 108, 619; 56, 176; 129, 483; 526, 537; 375, 293];
+% uttower2
+PB = [928, 331; 782, 540; 569, 545; 578, 652; 505, 232; 585, 519; 998, 567; 816, 322];
+
+%% C: compute homography
+H = estimate_homography(PA, PB);
+
+%% D: check if it works well (given by homography_examples.m)
+% transform all PA to PA_transformed using the estimated homography
+PA_transformed = [];
+for i=1:size(PA, 1)
+    p1 = PA(i,:);
+    p2 = apply_homography(p1, H);
+    PA_transformed = [PA_transformed; p2];
+end
+
+%
+p1 = [600, 900];
+[p2] = apply_homography(p1, H);
+
+% If our homography H is accurate, then PA_transformed should be similar to
+% PB which are the true correspondences. Check this yourself by outputting
+% the values or by plotting below.
+%img1 = 'uttower1.jpeg'; img2 = 'uttower2.jpeg';   % set img1, img2 to apply homography
+
+figure;
+subplot(1,2,1); hold on; 
+imshow(img1); plot(PA(:,1), PA(:,2), 'g.', 'MarkerSize', 20);
+title('PA shown in Image 1');
+subplot(1,2,2); hold on; 
+imshow(img2); plot(PA_transformed(:,1), PA_transformed(:,2), 'r.', 'MarkerSize', 20);
+title('PA transformed and shown in Image 2');
+
+%% stich a mosaic

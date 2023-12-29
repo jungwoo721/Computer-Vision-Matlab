@@ -2,11 +2,11 @@
 Simple Computer Vision Projects. Matlab Implementation
 
 ## Energy-based Image Reduction
-<img src='02_Energy_Based_Image_Reduction/my_image_energy.png'>
+<img src='02_Energy_Based_Image_Reduction/my_image_energy.png' width=200>
 <img src='02_Energy_Based_Image_Reduction/my_image_reduced.png'>
 
 ## Keypoint Extraction
-<img src='03_Keypoint_Extraction/my_image_harris.png.png'>
+<img src='03_Keypoint_Extraction/my_image_harris.png'>
 
 ## Edge, Circle Detection
 <img src='04_Edge_Circle_Detection_and_KMeans_Segmentation/my_image_circles.png'>
